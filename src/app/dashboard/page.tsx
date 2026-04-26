@@ -124,7 +124,7 @@ export default async function DashboardPage({
             <div className="sticky top-24 space-y-6">
               <ScoutButton />
 
-              <SkillsEditor initialSkills={skills} />
+              <SkillsEditor key={skills.join(',')} initialSkills={skills} />
 
               <div className="bg-zinc-900/20 border border-zinc-800/50 rounded-lg p-5">
                 <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4 font-[family-name:var(--font-jetbrains-mono)]">Mission Status</h3>
