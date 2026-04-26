@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useTransition } from 'react'
+import React, { useState, useTransition, useEffect } from 'react'
 import { X, Plus, Save, Brain } from 'lucide-react'
 import { updateHunterSkills } from '@/app/dashboard/actions'
 import { toast } from 'sonner'
@@ -13,7 +13,7 @@ export function SkillsEditor({ initialSkills }: { initialSkills: string[] }) {
   const router = useRouter()
 
   // Defensive: Update local state if props change (though key prop should handle this)
-  React.useEffect(() => {
+  useEffect(() => {
     if (initialSkills) setSkills(initialSkills)
   }, [initialSkills])
 
