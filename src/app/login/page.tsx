@@ -17,7 +17,9 @@ export default async function LoginPage() {
     'use server'
     const supabase = await createClient()
     const headerStore = await headers()
-    const origin = headerStore.get('origin') || 'http://localhost:3000'
+    const host = headerStore.get('host')
+    const protocol = headerStore.get('x-forwarded-proto') || 'http'
+    const origin = host ? `${protocol}://${host}` : 'http://localhost:3000'
     
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'github',
