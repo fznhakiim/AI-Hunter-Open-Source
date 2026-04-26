@@ -48,12 +48,12 @@ export function SkillsEditor({ initialSkills }: { initialSkills: string[] }) {
         {skills.map(skill => (
           <span 
             key={skill} 
-            className="flex items-center gap-1 px-2 py-1 bg-zinc-800 border border-zinc-700 text-[10px] font-bold text-lime-400 rounded group transition-all hover:border-lime-400/50"
+            className="flex items-center gap-1 px-2 py-1 bg-zinc-800 border border-zinc-700 text-[10px] font-bold text-lime-400 rounded group transition-all hover:border-lime-400/50 cursor-default"
           >
             {skill}
             <button 
               onClick={() => removeSkill(skill)}
-              className="opacity-0 group-hover:opacity-100 transition-opacity hover:text-white"
+              className="opacity-0 group-hover:opacity-100 transition-opacity hover:text-white cursor-pointer"
             >
               <X className="w-3 h-3" />
             </button>
@@ -72,7 +72,7 @@ export function SkillsEditor({ initialSkills }: { initialSkills: string[] }) {
         />
         <button 
           onClick={addSkill}
-          className="p-2 bg-zinc-800 border border-zinc-700 hover:border-lime-400 hover:text-lime-400 transition-all rounded"
+          className="p-2 bg-zinc-800 border border-zinc-700 hover:border-lime-400 hover:text-lime-400 transition-all rounded cursor-pointer"
         >
           <Plus className="w-4 h-4" />
         </button>
@@ -81,7 +81,7 @@ export function SkillsEditor({ initialSkills }: { initialSkills: string[] }) {
       <button
         onClick={handleSave}
         disabled={isPending}
-        className="w-full flex items-center justify-center gap-2 py-2 bg-lime-400 text-black text-[10px] font-black uppercase tracking-[0.2em] hover:bg-lime-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+        className="w-full flex items-center justify-center gap-2 py-2 bg-lime-400 text-black text-[10px] font-black uppercase tracking-[0.2em] hover:bg-lime-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2 cursor-pointer"
       >
         {isPending ? 'Syncing...' : (
           <>

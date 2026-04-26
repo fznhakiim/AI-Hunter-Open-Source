@@ -84,13 +84,15 @@ export async function updateHunterSkills(skills: string[]) {
     if (!user) throw new Error('Not authenticated')
 
     const userName = user.user_metadata?.full_name || user.user_metadata?.user_name || 'Hunter'
-    console.log('[Action] Updating skills for user:', user.id, 'as', userName);
+    const githubHandle = user.user_metadata?.user_name || user.user_metadata?.preferred_username || 'hunter_unknown'
+    console.log('[Action] Updating skills for user:', user.id, 'as', userName, `(@${githubHandle})`);
 
     const { error } = await supabase
       .from('user_profile')
       .upsert({ 
         user_id: user.id, 
         name: userName,
+        github_handle: githubHandle,
         skills,
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' })
