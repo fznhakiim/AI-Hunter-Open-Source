@@ -63,22 +63,11 @@ export function SkillsEditor({ initialSkills }: { initialSkills: string[] }) {
 
   return (
     <div className="bg-zinc-900/40 border border-zinc-800 rounded-lg p-5 space-y-4">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <Brain className="w-4 h-4 text-lime-400" />
-          <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest font-[family-name:var(--font-jetbrains-mono)]">
-            Hunter_Skillset
-          </h3>
-        </div>
-        <button
-          onClick={handleAutoDetect}
-          disabled={isPending}
-          className="flex items-center gap-1 text-[10px] text-zinc-400 hover:text-lime-400 transition-colors uppercase tracking-wider font-bold cursor-pointer disabled:opacity-50"
-          title="Auto-detect from GitHub public repos"
-        >
-          <GitBranch className="w-3 h-3" />
-          <span>Auto-Detect</span>
-        </button>
+      <div className="flex items-center gap-2 mb-2">
+        <Brain className="w-4 h-4 text-lime-400" />
+        <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest font-[family-name:var(--font-jetbrains-mono)]">
+          Hunter_Skillset
+        </h3>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -115,18 +104,33 @@ export function SkillsEditor({ initialSkills }: { initialSkills: string[] }) {
         </button>
       </div>
 
-      <button
-        onClick={handleSave}
-        disabled={isPending}
-        className="w-full flex items-center justify-center gap-2 py-2 bg-lime-400 text-black text-[10px] font-black uppercase tracking-[0.2em] hover:bg-lime-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2 cursor-pointer"
-      >
-        {isPending ? 'Syncing...' : (
-          <>
-            <Save className="w-3 h-3" />
-            Sync Skills
-          </>
-        )}
-      </button>
+      <div className="flex flex-col gap-2 mt-2">
+        <button
+          onClick={handleAutoDetect}
+          disabled={isPending}
+          className="w-full flex items-center justify-center gap-2 py-2 bg-lime-400 text-black text-[10px] font-black uppercase tracking-[0.2em] hover:bg-lime-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+        >
+          {isPending ? 'Scanning...' : (
+            <>
+              <GitBranch className="w-3 h-3" />
+              Auto-Detect GitHub Skills
+            </>
+          )}
+        </button>
+
+        <button
+          onClick={handleSave}
+          disabled={isPending}
+          className="w-full flex items-center justify-center gap-2 py-2 bg-zinc-800 border border-zinc-700 text-zinc-300 hover:text-white hover:border-lime-400 text-[10px] font-bold uppercase tracking-[0.2em] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+        >
+          {isPending ? 'Saving...' : (
+            <>
+              <Save className="w-3 h-3" />
+              Save Manual Edits
+            </>
+          )}
+        </button>
+      </div>
     </div>
   )
 }
