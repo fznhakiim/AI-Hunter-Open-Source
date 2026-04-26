@@ -83,12 +83,14 @@ export async function updateHunterSkills(skills: string[]) {
 
     if (!user) throw new Error('Not authenticated')
 
-    console.log('[Action] Updating skills for user:', user.id);
+    const userName = user.user_metadata?.full_name || user.user_metadata?.user_name || 'Hunter'
+    console.log('[Action] Updating skills for user:', user.id, 'as', userName);
 
     const { error } = await supabase
       .from('user_profile')
       .upsert({ 
         user_id: user.id, 
+        name: userName,
         skills,
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' })
