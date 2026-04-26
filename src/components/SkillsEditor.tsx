@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useTransition, useEffect } from 'react'
-import { X, Plus, Save, Brain, Github } from 'lucide-react'
+import { X, Plus, Save, Brain, GitBranch } from 'lucide-react'
 import { updateHunterSkills, syncGitHubSkills } from '@/app/dashboard/actions'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
@@ -76,7 +76,7 @@ export function SkillsEditor({ initialSkills }: { initialSkills: string[] }) {
           className="flex items-center gap-1 text-[10px] text-zinc-400 hover:text-lime-400 transition-colors uppercase tracking-wider font-bold cursor-pointer disabled:opacity-50"
           title="Auto-detect from GitHub public repos"
         >
-          <Github className="w-3 h-3" />
+          <GitBranch className="w-3 h-3" />
           <span>Auto-Detect</span>
         </button>
       </div>
