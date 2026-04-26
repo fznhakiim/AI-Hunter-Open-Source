@@ -142,3 +142,83 @@ export async function updateHunterSkills(skills: string[]) {
     return { success: false, message: error.message }
   }
 }
+
+export async function syncGitHubSkills() {
+  try {
+    const userClient = await createServerClient()
+    const { data: { user } } = await userClient.auth.getUser()
+
+    if (!user) throw new Error('Not authenticated')
+
+    const githubHandle = user.user_metadata?.user_name || user.user_metadata?.preferred_username;
+    if (!githubHandle) throw new Error('Could not find GitHub handle from account')
+
+    console.log('[Action] Auto-detecting skills for:', githubHandle);
+
+    const token = process.env.GITHUB_TOKEN || '';
+    const headers: Record<string, string> = {
+      'Accept': 'application/vnd.github.v3+json',
+      'User-Agent': 'AI-Hunter-App'
+    };
+    if (token) {
+      headers['Authorization'] = `token ${token}`;
+    }
+
+    const res = await fetch(`https://api.github.com/users/${githubHandle}/repos?per_page=100&sort=updated`, { headers, cache: 'no-store' });
+    
+    if (!res.ok) {
+      throw new Error(`GitHub API error: ${res.statusText}`)
+    }
+
+    const repos = await res.json();
+    const languageCounts: Record<string, number> = {};
+
+    for (const repo of repos) {
+      if (repo.language) {
+        languageCounts[repo.language] = (languageCounts[repo.language] || 0) + 1;
+      }
+    }
+
+    // Sort by count
+    const sortedLanguages = Object.entries(languageCounts)
+      .sort((a, b) => b[1] - a[1])
+      .map(entry => entry[0])
+      .slice(0, 7); // Top 7 languages
+
+    if (sortedLanguages.length === 0) {
+      return { success: false, message: 'No languages found in public repositories' }
+    }
+
+    // Update DB
+    const serviceKey = (process.env.SUPABASE_SERVICE_KEY || '').trim();
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const adminClient = createClient(supabaseUrl, serviceKey, {
+      global: { fetch: (url, options) => fetch(url, { ...options, cache: 'no-store' }) }
+    });
+
+    const userName = user.user_metadata?.full_name || githubHandle || 'Hunter'
+
+    // Check if profile exists
+    const { data: existingProfile } = await adminClient
+      .from('user_profile')
+      .select('id')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (existingProfile) {
+      await adminClient.from('user_profile').update({ 
+        name: userName, github_handle: githubHandle, skills: sortedLanguages, updated_at: new Date().toISOString()
+      }).eq('user_id', user.id);
+    } else {
+      await adminClient.from('user_profile').insert({ 
+        user_id: user.id, name: userName, github_handle: githubHandle, skills: sortedLanguages, updated_at: new Date().toISOString()
+      });
+    }
+
+    revalidatePath('/dashboard')
+    return { success: true, skills: sortedLanguages }
+  } catch (error: any) {
+    console.error('[Action Error] syncGitHubSkills crashed:', error);
+    return { success: false, message: error.message }
+  }
+}

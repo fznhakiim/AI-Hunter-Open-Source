@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useState, useTransition, useEffect } from 'react'
-import { X, Plus, Save, Brain } from 'lucide-react'
-import { updateHunterSkills } from '@/app/dashboard/actions'
+import { X, Plus, Save, Brain, Github } from 'lucide-react'
+import { updateHunterSkills, syncGitHubSkills } from '@/app/dashboard/actions'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 
@@ -28,6 +28,19 @@ export function SkillsEditor({ initialSkills }: { initialSkills: string[] }) {
     setSkills(skills.filter(s => s !== skillToRemove))
   }
 
+  const handleAutoDetect = () => {
+    startTransition(async () => {
+      const result = await syncGitHubSkills()
+      if (result.success && result.skills) {
+        setSkills(result.skills)
+        toast.success(`Found ${result.skills.length} skills from GitHub!`)
+        router.refresh()
+      } else {
+        toast.error(`Auto-detect failed: ${result.message}`)
+      }
+    })
+  }
+
   const handleSave = () => {
     startTransition(async () => {
       // Auto-add pending skill if user forgot to press Enter or '+'
@@ -50,11 +63,22 @@ export function SkillsEditor({ initialSkills }: { initialSkills: string[] }) {
 
   return (
     <div className="bg-zinc-900/40 border border-zinc-800 rounded-lg p-5 space-y-4">
-      <div className="flex items-center gap-2 mb-2">
-        <Brain className="w-4 h-4 text-lime-400" />
-        <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest font-[family-name:var(--font-jetbrains-mono)]">
-          Hunter_Skillset
-        </h3>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <Brain className="w-4 h-4 text-lime-400" />
+          <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest font-[family-name:var(--font-jetbrains-mono)]">
+            Hunter_Skillset
+          </h3>
+        </div>
+        <button
+          onClick={handleAutoDetect}
+          disabled={isPending}
+          className="flex items-center gap-1 text-[10px] text-zinc-400 hover:text-lime-400 transition-colors uppercase tracking-wider font-bold cursor-pointer disabled:opacity-50"
+          title="Auto-detect from GitHub public repos"
+        >
+          <Github className="w-3 h-3" />
+          <span>Auto-Detect</span>
+        </button>
       </div>
 
       <div className="flex flex-wrap gap-2">
