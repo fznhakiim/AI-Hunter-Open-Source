@@ -1,4 +1,5 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient as createServerClient } from '@/utils/supabase/server'
+import { createClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 import { Activity, Search, Terminal } from 'lucide-react'
 import { ScoutButton } from '@/components/ScoutButton'
@@ -18,7 +19,7 @@ export default async function DashboardPage({
   searchParams: Promise<{ status?: string }>
 }) {
   const params = await searchParams
-  const supabase = await createClient()
+  const supabase = await createServerClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
@@ -29,13 +30,17 @@ export default async function DashboardPage({
 
   const handleLogout = async () => {
     'use server'
-    const supabaseClient = await createClient()
+    const supabaseClient = await createServerClient()
     await supabaseClient.auth.signOut()
     redirect('/login')
   }
 
-  // Fetch user profile and skills
-  const { data: profile, error: profileError } = await supabase
+  // Fetch user profile and skills (Using Service Role bypass for reliability)
+  const serviceKey = (process.env.SUPABASE_SERVICE_KEY || "").trim();
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const adminClient = createClient(supabaseUrl, serviceKey);
+
+  const { data: profile, error: profileError } = await adminClient
     .from('user_profile')
     .select('skills')
     .eq('user_id', user.id)
