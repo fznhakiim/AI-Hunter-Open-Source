@@ -54,7 +54,7 @@ export default async function DashboardPage({
   const rawSkills = profile?.skills || []
   const skills = Array.isArray(rawSkills) && rawSkills.length > 0 
     ? rawSkills 
-    : ["TypeScript", "React", "Next.js", "Tailwind"]
+    : ["INI DEFAULT, SKILL NYA BELUM KE AMBIL"]
   
   console.log(`[Dashboard] DEBUG -> User: ${user.id} | RawSkills: ${JSON.stringify(rawSkills)} | FinalSkills: ${JSON.stringify(skills)}`);
 
