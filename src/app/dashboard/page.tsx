@@ -34,14 +34,21 @@ export default async function DashboardPage({
     redirect('/login')
   }
 
-  // Fetch profile
-  const { data: profile } = await supabase
+  // Fetch user profile and skills
+  const { data: profile, error: profileError } = await supabase
     .from('user_profile')
     .select('skills')
     .eq('user_id', user.id)
-    .single()
-    
-  const skills = profile?.skills || ["TypeScript", "React", "Next.js", "Tailwind"]
+    .maybeSingle()
+  
+  if (profileError) {
+    console.error("[Dashboard] Profile Fetch Error:", profileError);
+  }
+
+  const rawSkills = profile?.skills || []
+  const skills = rawSkills.length > 0 ? rawSkills : ["TypeScript", "React", "Next.js", "Tailwind"]
+  
+  console.log(`[Dashboard] User: ${user.id}, Skills Found: ${rawSkills.length}, Displaying: ${skills.join(', ')}`);
 
   // Fetch issues based on status tab
   let queryBuilder = supabase
