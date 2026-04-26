@@ -55,11 +55,9 @@ export default async function DashboardPage({
 
   // FORCE DEFAULT IF NULL OR EMPTY
   const rawSkills = profile?.skills || []
-  const skills = Array.isArray(rawSkills) && rawSkills.length > 0 
-    ? rawSkills 
-    : ["INI DEFAULT, SKILL NYA BELUM KE AMBIL"]
+  const skills = Array.isArray(rawSkills) ? rawSkills : []
   
-  console.log(`[Dashboard] DEBUG -> User: ${user.id} | RawSkills: ${JSON.stringify(rawSkills)} | FinalSkills: ${JSON.stringify(skills)}`);
+  console.log(`[Dashboard] DEBUG -> User: ${user.id} | FinalSkills: ${JSON.stringify(skills)}`);
 
   // Fetch issues based on status tab
   let queryBuilder = supabase

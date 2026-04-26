@@ -18,8 +18,8 @@ export function SkillsEditor({ initialSkills }: { initialSkills: string[] }) {
   }, [initialSkills])
 
   const addSkill = () => {
-    if (newSkill && !skills.includes(newSkill)) {
-      setSkills([...skills, newSkill])
+    if (newSkill.trim() && !skills.includes(newSkill.trim())) {
+      setSkills([...skills, newSkill.trim()])
       setNewSkill('')
     }
   }
@@ -30,7 +30,15 @@ export function SkillsEditor({ initialSkills }: { initialSkills: string[] }) {
 
   const handleSave = () => {
     startTransition(async () => {
-      const result = await updateHunterSkills(skills)
+      // Auto-add pending skill if user forgot to press Enter or '+'
+      let skillsToSave = [...skills];
+      if (newSkill.trim() && !skills.includes(newSkill.trim())) {
+        skillsToSave.push(newSkill.trim());
+        setSkills(skillsToSave);
+        setNewSkill('');
+      }
+
+      const result = await updateHunterSkills(skillsToSave)
       if (result.success) {
         toast.success("Hunter profile updated successfully")
         router.refresh()
