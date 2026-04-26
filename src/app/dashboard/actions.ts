@@ -78,16 +78,20 @@ export async function updateIssueStatus(issueId: string, status: 'saved' | 'solv
 
 export async function updateHunterSkills(skills: string[]) {
   try {
-    const supabase = await createServerClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const serviceKey = (process.env.SUPABASE_SERVICE_KEY || "").trim();
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const adminClient = createClient(supabaseUrl, serviceKey);
+
+    const userClient = await createServerClient()
+    const { data: { user } } = await userClient.auth.getUser()
 
     if (!user) throw new Error('Not authenticated')
 
     const userName = user.user_metadata?.full_name || user.user_metadata?.user_name || 'Hunter'
     const githubHandle = user.user_metadata?.user_name || user.user_metadata?.preferred_username || 'hunter_unknown'
-    console.log('[Action] Updating skills for user:', user.id, 'as', userName, `(@${githubHandle})`);
+    console.log('[Action] Updating skills (Admin) for user:', user.id, 'as', userName, `(@${githubHandle})`);
 
-    const { error } = await supabase
+    const { error } = await adminClient
       .from('user_profile')
       .upsert({ 
         user_id: user.id, 
