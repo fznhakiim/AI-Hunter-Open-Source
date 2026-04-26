@@ -1,6 +1,6 @@
 'use client'
 
-import { useTransition } from 'react'
+import React, { useTransition, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Code2, ExternalLink, Activity, Bookmark, CheckCircle2, RotateCcw } from 'lucide-react'
 import { updateIssueStatus } from '@/app/dashboard/actions'
@@ -14,15 +14,22 @@ interface IssueCardProps {
 
 export function IssueCard({ issue }: IssueCardProps) {
   const [isPending, startTransition] = useTransition()
+  const [isVisible, setIsVisible] = React.useState(true)
   const router = useRouter()
 
+  if (!isVisible) return null;
+
   const handleStatusUpdate = (status: 'saved' | 'solved' | 'found') => {
+    // Optimistic hide: Hide immediately for instant feel
+    setIsVisible(false)
+    
     startTransition(async () => {
       const result = await updateIssueStatus(issue.id, status)
       if (result.success) {
         toast.success(`Mission status updated: ${status.toUpperCase()}`)
         router.refresh()
       } else {
+        setIsVisible(true) // Show back if failed
         toast.error(`Update failed: ${result.message}`)
       }
     })
