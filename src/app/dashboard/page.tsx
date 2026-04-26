@@ -36,9 +36,12 @@ export default async function DashboardPage({
   }
 
   // Fetch user profile and skills (Using Service Role bypass for reliability)
+  // DISABLE CACHE to prevent Next.js from returning stale data
   const serviceKey = (process.env.SUPABASE_SERVICE_KEY || "").trim();
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const adminClient = createClient(supabaseUrl, serviceKey);
+  const adminClient = createClient(supabaseUrl, serviceKey, {
+    global: { fetch: (url, options) => fetch(url, { ...options, cache: 'no-store' }) }
+  });
 
   const { data: profile, error: profileError } = await adminClient
     .from('user_profile')
