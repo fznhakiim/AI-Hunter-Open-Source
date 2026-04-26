@@ -89,21 +89,48 @@ export async function updateHunterSkills(skills: string[]) {
 
     const userName = user.user_metadata?.full_name || user.user_metadata?.user_name || 'Hunter'
     const githubHandle = user.user_metadata?.user_name || user.user_metadata?.preferred_username || 'hunter_unknown'
-    console.log('[Action] Updating skills (Admin) for user:', user.id, 'as', userName, `(@${githubHandle})`);
+    console.log(`[Action] Saving skills for ${user.id}:`, JSON.stringify(skills));
 
-    const { error } = await adminClient
+    // Check if profile exists
+    const { data: existingProfile } = await adminClient
       .from('user_profile')
-      .upsert({ 
-        user_id: user.id, 
-        name: userName,
-        github_handle: githubHandle,
-        skills,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id' })
+      .select('id')
+      .eq('user_id', user.id)
+      .maybeSingle();
 
-    if (error) {
-      console.error('[Supabase Error] updateHunterSkills failed:', error);
-      return { success: false, message: error.message }
+    let dbError = null;
+
+    if (existingProfile) {
+      console.log(`[Action] Profile exists. FORCE UPDATING skills...`);
+      const { error } = await adminClient
+        .from('user_profile')
+        .update({ 
+          name: userName,
+          github_handle: githubHandle,
+          skills: skills, // Force update this column
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', user.id)
+        .select();
+      dbError = error;
+    } else {
+      console.log(`[Action] Profile NOT found. INSERTING new profile...`);
+      const { error } = await adminClient
+        .from('user_profile')
+        .insert({ 
+          user_id: user.id, 
+          name: userName,
+          github_handle: githubHandle,
+          skills: skills,
+          updated_at: new Date().toISOString()
+        })
+        .select();
+      dbError = error;
+    }
+
+    if (dbError) {
+      console.error('[Supabase Error] updateHunterSkills failed:', dbError);
+      return { success: false, message: dbError.message }
     }
 
     revalidatePath('/dashboard')
