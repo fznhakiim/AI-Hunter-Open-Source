@@ -7,10 +7,15 @@ import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 
 export function SkillsEditor({ initialSkills }: { initialSkills: string[] }) {
-  const [skills, setSkills] = useState<string[]>(initialSkills)
+  const [skills, setSkills] = useState<string[]>(initialSkills || [])
   const [newSkill, setNewSkill] = useState('')
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
+
+  // Defensive: Update local state if props change (though key prop should handle this)
+  React.useEffect(() => {
+    if (initialSkills) setSkills(initialSkills)
+  }, [initialSkills])
 
   const addSkill = () => {
     if (newSkill && !skills.includes(newSkill)) {

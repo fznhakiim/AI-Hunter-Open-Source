@@ -50,10 +50,13 @@ export default async function DashboardPage({
     console.error("[Dashboard] Profile Fetch Error:", profileError);
   }
 
+  // FORCE DEFAULT IF NULL OR EMPTY
   const rawSkills = profile?.skills || []
-  const skills = rawSkills.length > 0 ? rawSkills : ["TypeScript", "React", "Next.js", "Tailwind"]
+  const skills = Array.isArray(rawSkills) && rawSkills.length > 0 
+    ? rawSkills 
+    : ["TypeScript", "React", "Next.js", "Tailwind"]
   
-  console.log(`[Dashboard] User: ${user.id}, Skills Found: ${rawSkills.length}, Displaying: ${skills.join(', ')}`);
+  console.log(`[Dashboard] DEBUG -> User: ${user.id} | RawSkills: ${JSON.stringify(rawSkills)} | FinalSkills: ${JSON.stringify(skills)}`);
 
   // Fetch issues based on status tab
   let queryBuilder = supabase
