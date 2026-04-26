@@ -1,8 +1,9 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import { Terminal, Activity, Search } from 'lucide-react'
+import { Activity, Search, Terminal } from 'lucide-react'
 import { ScoutButton } from '@/components/ScoutButton'
 import { ExitButton } from '@/components/ExitButton'
+import { Logo } from '@/components/Logo'
 import { SniperInput } from '@/components/SniperInput'
 import { IssueCard } from '@/components/IssueCard'
 import { Badge } from '@/components/ui/badge'
@@ -71,9 +72,9 @@ export default async function DashboardPage({
       <header className="border-b border-zinc-800/80 bg-black/80 backdrop-blur-md sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Terminal className="w-5 h-5 text-lime-400" />
-            <span className="font-bold tracking-tight uppercase text-sm font-[family-name:var(--font-jetbrains-mono)]">
-              Scout_Agent<span className="text-lime-400">.exe</span>
+            <Logo className="w-6 h-6" />
+            <span className="font-black tracking-tighter uppercase text-sm italic">
+              Hunter<span className="text-lime-400">_OS</span>
             </span>
           </div>
           

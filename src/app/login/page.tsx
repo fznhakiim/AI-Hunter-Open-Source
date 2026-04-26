@@ -1,8 +1,9 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
-import { Terminal, ShieldCheck } from 'lucide-react'
+import { ShieldCheck } from 'lucide-react'
 import { LoginButton } from '@/components/LoginButton'
+import { Logo } from '@/components/Logo'
 
 export default async function LoginPage() {
   const supabase = await createClient()
@@ -44,17 +45,15 @@ export default async function LoginPage() {
           <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-lime-400"></div>
 
           <div className="flex flex-col items-center text-center space-y-6 mb-10">
-            <div className="w-16 h-16 bg-zinc-900 border border-zinc-700 flex items-center justify-center">
-              <Terminal className="w-8 h-8 text-lime-400" />
-            </div>
+            <Logo className="w-20 h-20" />
             
             <div className="space-y-3">
-              <h1 className="text-3xl font-bold tracking-tighter text-zinc-100 uppercase">
-                Scout<span className="text-lime-400">_Agent</span>
+              <h1 className="text-4xl font-black tracking-tighter text-zinc-100 uppercase italic">
+                Hunter<span className="text-lime-400">_OS</span>
               </h1>
-              <p className="text-zinc-500 text-xs leading-relaxed max-w-[280px] mx-auto font-[family-name:var(--font-jetbrains-mono)]">
-                &gt; AWAITING AUTHENTICATION... <br/>
-                &gt; CONNECT GITHUB TO INITIATE PROTOCOL.
+              <p className="text-zinc-500 text-[10px] leading-relaxed max-w-[280px] mx-auto font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-widest">
+                &gt; INITIALIZING TARGETING SYSTEM... <br/>
+                &gt; CONNECT GITHUB TO START THE HUNT.
               </p>
             </div>
           </div>
